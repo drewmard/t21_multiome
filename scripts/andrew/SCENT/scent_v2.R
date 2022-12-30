@@ -1,3 +1,6 @@
+# srun --account=smontgom --partition=batch --time=24:00:00 --mem=256G --nodes=1 --ntasks=1 --cpus-per-task=1 --pty bash
+# module load R/4.1.2
+
 # Code adapted from SCENT: https://github.com/immunogenomics/SCENT/blob/main/SCENT.R (original author: Saori Sakaue)
 
 library(biomaRt)
@@ -143,9 +146,10 @@ create_input_and_run_SCENT <- function(i,run_bs=TRUE,iter_print=1000) {
 
 # celltype_to_use = "HSCs_T21"
 f.cell.out = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input/cells.txt")
-cells = fread(f.cell.out,data.table = F,stringsAsFactors = F,header = F)
+cells = fread(f.cell.out,data.table = F,stringsAsFactors = F,header = F)[,1]
+cells = cells[c(7,21,(1:length(cells))[-c(7,21)])]
 
-for (celltype_to_use in cells[,1]) {
+for (celltype_to_use in cells) {
 
 print(celltype_to_use)
 fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"

@@ -115,3 +115,6 @@ dev.off()
 
 aggregate(dfseurat.sub.rna@meta.data[,c("nCount_RNA","nFeature_RNA")],by=list(disease=dfseurat.sub.rna@meta.data$disease,kmeans=dfseurat.sub.rna@meta.data$kmeans),median)
 
+
+
+

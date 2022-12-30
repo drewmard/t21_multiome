@@ -1,3 +1,4 @@
+# srun --account=smontgom --partition=batch --time=24:00:00 --mem=256G --nodes=1 --ntasks=1 --cpus-per-task=1 --pty bash
 # module load R/4.1.2
 
 library(biomaRt)
