@@ -73,3 +73,4 @@ res.df.all$i = 500*(num-1) + res.df.all$i
 fwrite(res.df.all,output_file,quote = F,na = "NA",sep = "\t",row.names = F,col.names = T)
 
 print(paste0("Results written to: ",output_file))
+
