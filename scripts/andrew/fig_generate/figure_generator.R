@@ -3,7 +3,50 @@ library(ggplot2)
 library(RColorBrewer)
 
 # load TRS data:
+traitName="rbc"
 trait_mat.save = fread(paste0("~/Documents/Research/t21_multiome/output/scavenge/",traitName,".txt"),data.table = F,stringsAsFactors = F)
+
+# A
+library(RColorBrewer)
+library(ggtext)
+tmp = trait_mat.save
+set.seed(03191995)
+n <- length(unique(tmp$subclust_v6))
+qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
+col_vector = unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))
+col_to_use = sample(col_vector, n)
+col_to_use[9] = "#E5C494"
+tmpout = aggregate(tmp[,c("UMAP_1","UMAP_2")],by=list(tmp$subclust_v6),mean)
+p2 <- ggplot(data=tmp[sample(1:nrow(tmp),nrow(tmp),replace = F),], aes(UMAP_1, UMAP_2)) + 
+  geom_point(aes(color=subclust_v6),size=1, na.rm = TRUE, alpha = 0.6) +
+  scale_alpha()+
+  theme_bw() + 
+  theme(legend.title = element_blank(),
+        panel.grid = element_blank()) + 
+  xlab("UMAP 1") + ylab("UMAP 2") +
+  scale_color_manual(values=col_to_use)
+f.plot = paste0("~/Documents/Research/t21_multiome/output/scavenge_plots/umap.clusters.labels.pdf")
+pdf(f.plot,width=10.2,height=7)
+print(p2 +   geom_richtext(data = tmpout,aes(label=Group.1,x=UMAP_1,y=UMAP_2)))
+dev.off()
+f.plot = paste0("~/Documents/Research/t21_multiome/output/scavenge_plots/umap.clusters.text.pdf")
+pdf(f.plot,width=10.2,height=7)
+print(p2 +   geom_text(data = tmpout,aes(label=Group.1,x=UMAP_1,y=UMAP_2)))
+dev.off()
+f.plot = paste0("~/Documents/Research/t21_multiome/output/scavenge_plots/umap.clusters.none.pdf")
+pdf(f.plot,width=10.2,height=7)
+print(p2)
+dev.off()
+
+
+
+# geom_richtext(label=tmp$Group.1,x=tmp$UMAP_1,y=tmp$UMAP_2)
+# scale_color_gradientn(colors = viridis) + 
+
+f.plot = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scavenge_plots/umap.clusters.pdf")
+pdf(f.plot,width=10.2,height=7)
+print(p2)
+dev.off()
 
 library(RColorBrewer)
 set.seed(031995)
@@ -179,9 +222,17 @@ pdf(f.plot,width=4.3,height=4.7)
 print(p2)
 dev.off()
 
+library(RColorBrewer)
+brewer.pal(n=4,"Set1")
+
+ggplot(data=data.frame(x=rnorm(100),y=rnorm(100)),aes(x,y)) + geom_point(col="#E41A1C")
+ggplot(data=data.frame(x=rnorm(100),y=rnorm(100)),aes(x,y)) + geom_point(col="#377EB8")
+
+ggplot(data=data.frame(x=rnorm(100),y=rnorm(100))) + geom_point(col="#377EB8")
 
 # M
-col_to_use = c("#FB8072" ,"#CBD5E8","violetred3")
+# col_to_use = c("#FB8072" ,"#CBD5E8","violetred3")
+col_to_use = c("#FB8072" ,"#CBD5E8","#CD3278")
 # col_to_use = c("#FB8072" ,"violetred3","#CBD5E8")
 p2 <- ggplot(data=df[sample(1:nrow(df),nrow(df),replace = F),], aes(UMAP_1_RNA, UMAP_2_RNA)) + 
   geom_point(size=1, na.rm = TRUE, alpha = 0.6,aes(col=as.factor(kmeans_RNA)) )+

@@ -147,8 +147,9 @@ table(df.sub2$fdr_t21 < 0.05,df.sub2$fm)
 
 # fisher.test(df.sub2$p_h < 0.05,df.sub2$fm)
 
+
 gene_of_interest = "TFR2"; peak_of_interest = "chr7-100639909-100642992"
-gene_of_interest = "ABCA7"; peak_of_interest = "chr19-1063288-1063650"
+# gene_of_interest = "ABCA7"; peak_of_interest = "chr19-1063288-1063650"
 Idents(dfseurat) <- "kmeans_RNA"
 levels(dfseurat) = c("1","2","3")
 DefaultAssay(dfseurat) = "ATAC"

@@ -15,7 +15,7 @@ library(Matrix)
 library(parallel)
 options(stringsAsFactors = F)
 
-downsample=TRUE
+downsample=FALSE
 
 #######################################################################################
 
@@ -104,32 +104,39 @@ bootstrapping = function(df2.input,i) {
   return(p0)
 }
 
-bootstrapping_sig = function(df2.input,i,res.df=NULL) {
-  if (is.null(res.df)) { 
-    bs = boot::boot(df2.input,assoc_poisson, R = 10000, stype = 'i')
+bootstrapping_sig = function(df2.input,i,pval,res.df=NULL) {
+  if (pval >= 0.1) {
+    bs = boot::boot(df2.input,assoc_poisson, R = 100, stype = 'i')
     p0 = basic_p(bs$t0[1], bs$t[,1])
-    print(paste0("R=10000, i=",i,": p0=",p0))
-  } else {
-    pval = res.df[i,"p"]
-    if (pval >= 0.1) {
-      bs = boot::boot(df2.input,assoc_poisson, R = 100, stype = 'i')
-    } else if (pval >= 0.01 & pval < 0.1) {
+    if (p0 < 0.1) {
       bs = boot::boot(df2.input,assoc_poisson, R = 1000, stype = 'i')
-    } else {
-      bs = boot::boot(df2.input,assoc_poisson, R = 10000, stype = 'i')
+      p0 = basic_p(bs$t0[1], bs$t[,1])
     }
+    if (p0 < 0.01) {
+      bs = boot::boot(df2.input,assoc_poisson, R = 10000, stype = 'i')
+      p0 = basic_p(bs$t0[1], bs$t[,1])
+    }
+  } else if (pval >= 0.01 & pval < 0.1) {
+    bs = boot::boot(df2.input,assoc_poisson, R = 1000, stype = 'i')
+    p0 = basic_p(bs$t0[1], bs$t[,1])
+    if (p0 < 0.01) {
+      bs = boot::boot(df2.input,assoc_poisson, R = 10000, stype = 'i')
+      p0 = basic_p(bs$t0[1], bs$t[,1])
+    }
+  } else {
+    bs = boot::boot(df2.input,assoc_poisson, R = 10000, stype = 'i')
     p0 = basic_p(bs$t0[1], bs$t[,1])
   }
   return(p0)
 }
 
-SCENT = function(df2.input,i,run_bs=TRUE,bootstrap_sig=FALSE,res.df.input=NULL) {
+SCENT = function(df2.input,i,run_bs=TRUE,bootstrap_sig=FALSE) {
   # poisson
   base = glm(exprs ~ ., family = 'poisson', data = df2.input) # why do raw counts instead of normalization? or voom re-weighting?
   coefs<-summary(base)$coefficients["atac",]
   if (run_bs) {
     if (bootstrap_sig) {
-      p0 = bootstrapping_sig(df2.input,i,res.df=res.df.input)
+      p0 = bootstrapping_sig(df2.input,i,pval=coefs[4])
     } else {
       p0 = bootstrapping(df2.input,i)
     }
@@ -143,12 +150,12 @@ SCENT = function(df2.input,i,run_bs=TRUE,bootstrap_sig=FALSE,res.df.input=NULL) 
   return(out)
 }
 
-create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=FALSE,iter_print=1000,res.df.input=NULL) {
+create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=FALSE,iter_print=1000) {
   if (run_bs) {print(i)}
   if ( (i %% iter_print) == 0) {print(i)} # print update i every $iter_print iterations
   df2.input = create_input_data(i = i)
   if(!is.null(df2.input)){
-    out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig,res.df.input = res.df.input)
+    out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)
     return(out)
   } else {
     return(data.frame())
@@ -159,29 +166,70 @@ create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=FALSE,iter_pr
 ###############################################################################
 ###############################################################################
 
-celltype_to_use = "HSCs_T21"
-f.cell.out = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input/cells.txt")
-cells = fread(f.cell.out,data.table = F,stringsAsFactors = F,header = F)[,1]
-cells = cells[c(7,21,(1:length(cells))[-c(7,21)])]
+# celltype_to_use = "HSCs_T21"
+# f.cell.out = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input/cells.txt")
+# cells = fread(f.cell.out,data.table = F,stringsAsFactors = F,header = F)[,1]
+# cells = cells[c(7,21,(1:length(cells))[-c(7,21)])]
 
 # celltype_to_use = "HSCs_H"
 # for (celltype_to_use in cells) {
 
+# source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/scent_v4.R")
+
+projName="tmparm"
+celltype_to_use = "HSCs_T21"
+num=77
+
+args = commandArgs(trailingOnly=TRUE)
+projName = args[1]
+celltype_to_use = args[2]
+num = as.numeric(args[3])
+
 print(celltype_to_use)
 fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"
-f.atac_out = paste0(fDir,"/atac/",celltype_to_use,".atac.rds")
-f.rna_out = paste0(fDir,"/rna/",celltype_to_use,".rna.rds")
+tmpDir = paste0("/oak/stanford/groups/smontgom/amarder/tmp/",projName)
+f.atac_out = paste0(tmpDir,"/atac/",celltype_to_use,".atac.",num,".rds")
+f.rna_out = paste0(tmpDir,"/rna/",celltype_to_use,".rna.",num,".rds")
 f.meta_out = paste0(fDir,"/meta/meta.",celltype_to_use,".rds")
-f.chunkinfo = paste0(fDir,"/chunkinfo/",celltype_to_use,".chunkinfo.txt")
+f.chunkinfo = paste0(tmpDir,"/chunkinfo_split/",celltype_to_use,".chunkinfo.",num,".txt")
+output_file = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/out_split/",celltype_to_use,".",num,".txt")
 
 atac.all = readRDS(f.atac_out)
 mrna = readRDS(f.rna_out)
 meta = readRDS(f.meta_out)
 chunkinfo = fread(f.chunkinfo,data.table = F,stringsAsFactors = F)
 
-numThreads = detectCores() #/2
-
 print(paste0("Running ",nrow(chunkinfo)," peak-gene connections..."))
+system.time(out.sub <- lapply(1:3, #nrow(chunkinfo),
+                              create_input_and_run_SCENT,
+                              run_bs=TRUE,
+                              bootstrap_sig=TRUE))
+numThreads = detectCores() #/2
+# system.time(out.sub <- mclapply(1:3,
+#                                 create_input_and_run_SCENT,
+#                                 run_bs=TRUE,
+#                                 bootstrap_sig=TRUE,
+#                                 mc.cores = min(nrow(chunkinfo),numThreads)
+#                                 ))
+# create_input_and_run_SCENT(37973,run_bs=TRUE,bootstrap_sig=TRUE)
+res.df.all = as.data.frame(do.call(rbind,out.sub))
+res.df.all$fdr = NA
+res.df.all$pval = res.df.all$boot_basic_p
+res.df.all$pval[is.na(res.df.all$pval)] <- res.df.all$p[is.na(res.df.all$pval)]
+res.df.all$fdr = p.adjust(res.df.all$pval,method = 'fdr')
+res.df.all$celltype = celltype_to_use
+res.df.all = res.df.all[order(res.df.all$i),]
+res.df.all$i = 500*(num-1) + res.df.all$i
+fwrite(res.df.all,output_file,quote = F,na = "NA",sep = "\t",row.names = F,col.names = T)
+
+
+
+
+
+
+
+
+
 
 if (downsample) {
   set.seed(03191995)
