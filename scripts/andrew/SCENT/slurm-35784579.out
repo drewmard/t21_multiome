@@ -1,0 +1,11 @@
+Lmod has detected the following error: Unable to load module because of error
+when evaluating modulefile:
+     /scg/apps/modules/modulefiles/R/4.1.2.lua: Empty or non-existant file
+     Please check the modulefile and especially if there is a the line number
+specified in the above message 
+While processing the following module(s):
+    Module fullname  Module Filename
+    ---------------  ---------------
+    R/4.1.2          /scg/apps/modules/modulefiles/R/4.1.2.lua
+
+/var/spool/slurm/slurmd/job35784579/slurm_script: line 12: Rscript: command not found
