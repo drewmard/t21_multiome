@@ -3,7 +3,7 @@
 
 # Code adapted from SCENT: https://github.com/immunogenomics/SCENT/blob/main/SCENT.R (original author: Saori Sakaue)
 
-library(biomaRt)
+# library(biomaRt)
 library(Seurat)
 library(Signac)
 library(data.table)
