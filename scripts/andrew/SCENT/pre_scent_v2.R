@@ -119,7 +119,7 @@ for (celltype_to_use in unique(dfseurat@meta.data$celltype)) {
   fwrite(chunkinfo,f.chunkinfo,quote = F,na = "NA",sep = '\t',row.names = F,col.names = T)
   
   source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/assemble_parallel_files.R")
-  assemble_parallel_files(celltype_to_use=celltype_to_use,projName="tmparm")
+  assemble_parallel_files(celltype_to_use=celltype_to_use,projName="tmparm2",read_files=TRUE)
   
 }
 

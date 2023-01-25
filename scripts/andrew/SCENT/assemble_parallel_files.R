@@ -18,11 +18,12 @@ assemble_parallel_files <- function(projName,celltype_to_use,read_files=FALSE) {
     mrna = readRDS(f.rna_out)
   }
   
-  unlink(paste0("/tmp/",projName,"/"),recursive = TRUE)
-  dir.create(paste0("/tmp/",projName,"/"),showWarnings = FALSE)
-  dir.create(paste0("/tmp/",projName,"/atac"),showWarnings = FALSE)
-  dir.create(paste0("/tmp/",projName,"/rna"),showWarnings = FALSE)
-  dir.create(paste0("/tmp/",projName,"/chunkinfo_split"),showWarnings = FALSE)
+  tmpDir = paste0("/oak/stanford/groups/smontgom/amarder/tmp/",projName)
+  unlink(paste0(tmpDir),recursive = TRUE)
+  dir.create(paste0(tmpDir,"/"),showWarnings = FALSE)
+  dir.create(paste0(tmpDir,"/atac"),showWarnings = FALSE)
+  dir.create(paste0(tmpDir,"/rna"),showWarnings = FALSE)
+  dir.create(paste0(tmpDir,"/chunkinfo_split"),showWarnings = FALSE)
   dir.create(paste0(fDir,"/info"),showWarnings = FALSE)
   if (file.exists(paste0(fDir,"/info/nums"))) {file.remove(paste0(fDir,"/info/nums"),showWarnings = FALSE)}
   
@@ -46,9 +47,9 @@ assemble_parallel_files <- function(projName,celltype_to_use,read_files=FALSE) {
     atac.sub = atac.all[unique(chunkinfo.split$peak),]
     mrna.sub = mrna[unique(chunkinfo.split$gene),]
     
-    fout.atac = paste0("/tmp/tmparm/atac/",celltype_to_use,".atac.",i,".rds")
-    fout.rna = paste0("/tmp/tmparm/rna/",celltype_to_use,".rna.",i,".rds")
-    fout.chunkinfo = paste0("/tmp/tmparm/chunkinfo_split/",celltype_to_use,".chunkinfo.",i,".txt")
+    fout.atac = paste0(tmpDir,"/atac/",celltype_to_use,".atac.",i,".rds")
+    fout.rna = paste0(tmpDir,"/rna/",celltype_to_use,".rna.",i,".rds")
+    fout.chunkinfo = paste0(tmpDir,"/chunkinfo_split/",celltype_to_use,".chunkinfo.",i,".txt")
     
     saveRDS(atac.sub,fout.atac)
     saveRDS(mrna.sub,fout.rna)

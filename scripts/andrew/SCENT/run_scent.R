@@ -31,8 +31,8 @@ args = commandArgs(trailingOnly=TRUE)
 projName = args[1]
 celltype_to_use = args[2]
 num = as.numeric(args[3])
-
-print(celltype_to_use)
+if (length(args) > 3) {downsample=args[4]}
+print(paste("run_scent.R",projName,celltype_to_use,num))
 fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"
 tmpDir = paste0("/oak/stanford/groups/smontgom/amarder/tmp/",projName)
 f.atac_out = paste0(tmpDir,"/atac/",celltype_to_use,".atac.",num,".rds")
@@ -45,6 +45,15 @@ atac.all = readRDS(f.atac_out)
 mrna = readRDS(f.rna_out)
 meta = readRDS(f.meta_out)
 chunkinfo = fread(f.chunkinfo,data.table = F,stringsAsFactors = F)
+
+if (downsample=="TRUE") {
+  set.seed(03191995)
+  ind = sort(sample(1:3784,2431,replace = F))
+  atac.all = atac.all[,ind]
+  mrna = mrna[,ind]
+  meta = meta[ind,]
+  output_file = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/out_split/",celltype_to_use,".down.",num,".txt")
+}
 
 print(paste0("Running ",nrow(chunkinfo)," peak-gene connections..."))
 system.time(out.sub <- lapply(1:nrow(chunkinfo),
