@@ -47,6 +47,7 @@ meta = readRDS(f.meta_out)
 chunkinfo = fread(f.chunkinfo,data.table = F,stringsAsFactors = F)
 
 if (downsample=="TRUE") {
+  print("~ ~ ~ DOWNSAMPLING ~ ~ ~")
   set.seed(03191995)
   ind = sort(sample(1:3784,2431,replace = F))
   atac.all = atac.all[,ind]
