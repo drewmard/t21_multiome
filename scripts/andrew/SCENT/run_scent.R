@@ -47,7 +47,7 @@ meta = readRDS(f.meta_out)
 chunkinfo = fread(f.chunkinfo,data.table = F,stringsAsFactors = F)
 
 print(paste0("Running ",nrow(chunkinfo)," peak-gene connections..."))
-system.time(out.sub <- lapply(1:3, #nrow(chunkinfo),
+system.time(out.sub <- lapply(1:nrow(chunkinfo),
                               create_input_and_run_SCENT,
                               run_bs=TRUE,
                               bootstrap_sig=TRUE))
