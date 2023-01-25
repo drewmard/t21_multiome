@@ -31,8 +31,8 @@ args = commandArgs(trailingOnly=TRUE)
 projName = args[1]
 celltype_to_use = args[2]
 num = as.numeric(args[3])
-if (length(args) > 3) {downsample=args[4]}
-print(paste("run_scent.R",projName,celltype_to_use,num))
+if (length(args) > 3) {downsample=args[4]} else {downsample="FALSE"}
+print(paste("run_scent.R",projName,celltype_to_use,num,downsample))
 fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"
 tmpDir = paste0("/oak/stanford/groups/smontgom/amarder/tmp/",projName)
 f.atac_out = paste0(tmpDir,"/atac/",celltype_to_use,".atac.",num,".rds")
