@@ -28,6 +28,7 @@ celltype_to_use = "HSCs_T21"
 num=77
 
 args = commandArgs(trailingOnly=TRUE)
+print(paste(length(args),"arguments."))
 projName = args[1]
 celltype_to_use = args[2]
 num = as.numeric(args[3])
