@@ -17,6 +17,7 @@ options(stringsAsFactors = F)
 
 downsample=FALSE
 use_interaction=TRUE
+num_links_per_chunk=100
 source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/scent_v4.R")
 
 ###############################################################################
@@ -88,7 +89,7 @@ res.df.all$pval[is.na(res.df.all$pval)] <- res.df.all$p[is.na(res.df.all$pval)]
 res.df.all$fdr = p.adjust(res.df.all$pval,method = 'fdr')
 res.df.all$celltype = celltype_to_use
 res.df.all = res.df.all[order(res.df.all$i),]
-res.df.all$i = 500*(num-1) + res.df.all$i
+res.df.all$i = num_links_per_chunk*(num-1) + res.df.all$i
 fwrite(res.df.all,output_file,quote = F,na = "NA",sep = "\t",row.names = F,col.names = T)
 
 print(paste0("Results written to: ",output_file))
