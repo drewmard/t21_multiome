@@ -48,7 +48,11 @@ basic_p = function(obs, boot, null = 0){
 assoc_poisson = function(data, idx = seq_len(nrow(data))){
   gg = glm(exprs ~ ., family = 'poisson', data = data[idx,,drop = FALSE])
   # gg = glm(exprs ~ atac + percent_mito + log(nUMI) + sample, family = 'poisson', data = data[idx,,drop = FALSE])
-  c(coef(gg)['atac'], diag(vcov(gg))['atac'])
+  c(coef(gg)[coef_to_use], diag(vcov(gg))[coef_to_use])
+}
+
+substrRight <- function(x, n){
+  substr(x, nchar(x)-n+1, nchar(x))
 }
 
 create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05) {
@@ -60,20 +64,30 @@ create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05) {
   df<-merge(df,atac_target,by="cell")
   df<-merge(df,meta,by="cell")
   
+  df2 <- df
   # Subset cells to test:
-  df2 <- df[df$celltype==celltype_to_use,]
-  
+  # if (substrRight(celltype_to_use,4)=="_all") {
+  #   df2 <- df[df$celltype0==gsub("_.*","",celltype_to_use),]
+  # } else {
+  #   df2 <- df[df$celltype==celltype_to_use,]
+  # }
+
   # Binarize peaks:
-  df2[df2$atac>0,]$atac<-1
+  # df2[df2$atac>0,]$atac<-1
   
   # QC: Require >5% expressed genes and accessible peaks:
-  nonzero_m  <- length( df2$exprs[ df2$exprs > 0] ) / length( df2$exprs )
-  nonzero_a  <- length( df2$atac[ df2$atac > 0] ) / length( df2$atac )
-  if(!(nonzero_m > pct.rna.keep & nonzero_a > pct.atac.keep)){return(NULL)}
+  # nonzero_m  <- length( df2$exprs[ df2$exprs > 0] ) / length( df2$exprs )
+  # nonzero_a  <- length( df2$atac[ df2$atac > 0] ) / length( df2$atac )
+  # if(!(nonzero_m > pct.rna.keep & nonzero_a > pct.atac.keep)){return(NULL)}
   # create log nUMI column
   df2$log_nUMI = log(df2$nUMI)
   
-  df2.input = df2[,c("exprs","atac","percent_mito","log_nUMI","sample")]
+  if (use_interaction=="TRUE") {
+    df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
+    df2.input = df2[,c("exprs","atac_disease0","atac","percent_mito","log_nUMI","sample")]
+  } else {
+    df2.input = df2[,c("exprs","atac","percent_mito","log_nUMI","sample")]
+  }
   return(df2.input)
 }
 
@@ -133,7 +147,8 @@ bootstrapping_sig = function(df2.input,i,pval,res.df=NULL) {
 SCENT = function(df2.input,i,run_bs=TRUE,bootstrap_sig=FALSE) {
   # poisson
   base = glm(exprs ~ ., family = 'poisson', data = df2.input) # why do raw counts instead of normalization? or voom re-weighting?
-  coefs<-summary(base)$coefficients["atac",]
+  coefs<-summary(base)$coefficients[coef_to_use,]
+  
   if (run_bs) {
     if (bootstrap_sig) {
       p0 = bootstrapping_sig(df2.input,i,pval=coefs[4])

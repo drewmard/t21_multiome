@@ -16,6 +16,7 @@ library(parallel)
 options(stringsAsFactors = F)
 
 downsample=FALSE
+use_interaction=TRUE
 source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/scent_v4.R")
 
 ###############################################################################
@@ -23,9 +24,9 @@ source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/
 ###############################################################################
 
 
-projName="tmparm"
-celltype_to_use = "HSCs_T21"
-num=77
+projName="tmparm3"
+celltype_to_use = "HSCs_all"
+num=1
 
 args = commandArgs(trailingOnly=TRUE)
 print(paste(length(args),"arguments."))
@@ -33,6 +34,7 @@ projName = args[1]
 celltype_to_use = args[2]
 num = as.numeric(args[3])
 if (length(args) > 3) {downsample=args[4]} else {downsample="FALSE"}
+if (length(args) > 4) {downsample=args[5]} else {use_interaction="FALSE"}
 print(paste("run_scent.R",projName,celltype_to_use,num,downsample))
 fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"
 tmpDir = paste0("/oak/stanford/groups/smontgom/amarder/tmp/",projName)
@@ -55,6 +57,12 @@ if (downsample=="TRUE") {
   mrna = mrna[,ind]
   meta = meta[ind,]
   output_file = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/out_split/",celltype_to_use,".down.",num,".txt")
+}
+
+if (use_interaction=="TRUE") {
+  coef_to_use = "atac_disease0"
+} else {
+  coef_to_use = "atac"
 }
 
 print(paste0("Running ",nrow(chunkinfo)," peak-gene connections..."))
