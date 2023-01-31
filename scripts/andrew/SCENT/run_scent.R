@@ -27,7 +27,7 @@ source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/
 
 projName="tmparm3"
 celltype_to_use = "HSCs_all"
-num=1
+num=100
 
 args = commandArgs(trailingOnly=TRUE)
 print(paste(length(args),"arguments."))
@@ -67,11 +67,20 @@ if (use_interaction=="TRUE") {
 }
 
 print(paste0("Running ",nrow(chunkinfo)," peak-gene connections..."))
-system.time(out.sub <- lapply(1:nrow(chunkinfo),
+# system.time(out.sub <- lapply(1:nrow(chunkinfo),
+#                               create_input_and_run_SCENT,
+#                               run_bs=TRUE,
+#                               bootstrap_sig=TRUE))
+
+numThreads = detectCores() #/2
+indinput = 85:87
+system.time(out.sub <- mclapply(indinput,
                               create_input_and_run_SCENT,
                               run_bs=TRUE,
-                              bootstrap_sig=TRUE))
-# numThreads = detectCores() #/2
+                              bootstrap_sig=TRUE,
+                              mc.cores = min(nrow(chunkinfo),numThreads)
+))
+
 # system.time(out.sub <- mclapply(1:3,
 #                                 create_input_and_run_SCENT,
 #                                 run_bs=TRUE,
