@@ -141,6 +141,7 @@ bootstrapping_sig = function(df2.input,i,pval,res.df=NULL) {
     bs = boot::boot(df2.input,assoc_poisson, R = 10000, stype = 'i')
     p0 = basic_p(bs$t0[1], bs$t[,1])
   }
+  print(paste0("i=",i,": p-value=",p0))
   return(p0)
 }
 
@@ -165,7 +166,7 @@ SCENT = function(df2.input,i,run_bs=TRUE,bootstrap_sig=FALSE) {
   return(out)
 }
 
-create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=FALSE,iter_print=1000) {
+create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=TRUE,iter_print=1000) {
   if (run_bs) {print(i)}
   if ( (i %% iter_print) == 0) {print(i)} # print update i every $iter_print iterations
   df2.input = create_input_data(i = i)
@@ -176,3 +177,6 @@ create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=FALSE,iter_pr
     return(data.frame())
   }
 }
+
+
+
