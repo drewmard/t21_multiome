@@ -67,19 +67,19 @@ if (use_interaction=="TRUE") {
 }
 
 print(paste0("Running ",nrow(chunkinfo)," peak-gene connections..."))
-# system.time(out.sub <- lapply(1:nrow(chunkinfo),
-#                               create_input_and_run_SCENT,
-#                               run_bs=TRUE,
-#                               bootstrap_sig=TRUE))
-
-numThreads = detectCores() #/2
-indinput = 85:87
-system.time(out.sub <- mclapply(indinput,
+system.time(out.sub <- lapply(1:nrow(chunkinfo),
                               create_input_and_run_SCENT,
                               run_bs=TRUE,
-                              bootstrap_sig=TRUE,
-                              mc.cores = min(nrow(chunkinfo),numThreads)
-))
+                              bootstrap_sig=TRUE))
+
+# numThreads = detectCores() #/2
+# indinput = 85:87
+# system.time(out.sub <- mclapply(indinput,
+#                               create_input_and_run_SCENT,
+#                               run_bs=TRUE,
+#                               bootstrap_sig=TRUE,
+#                               mc.cores = min(indinput,numThreads)
+# ))
 
 # system.time(out.sub <- mclapply(1:3,
 #                                 create_input_and_run_SCENT,
