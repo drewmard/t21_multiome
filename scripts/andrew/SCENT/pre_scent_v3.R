@@ -85,40 +85,53 @@ rownames(meta) <- NULL
 
 # celltype_to_use = "HSCs_T21"
 celltype_to_use = "HSCs_all"
+
+fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"
 for (celltype_to_use in unique(dfseurat@meta.data$celltype)) {
   
   print(celltype_to_use)
   
   if (substrRight(celltype_to_use,4)=="_all") {
     cells.keep = gsub(" ","_",dfseurat@meta.data$subclust_v6) == gsub("_.*","",celltype_to_use)
+    f.chunkinfo = paste0(fDir,"/chunkinfo/",paste0(gsub("_.*","",celltype_to_use),"_H"),".chunkinfo.txt")
+    chunk1 = fread(f.chunkinfo,data.table = F,stringsAsFactors = F)
+    f.chunkinfo = paste0(fDir,"/chunkinfo/",paste0(gsub("_.*","",celltype_to_use),"_T21"),".chunkinfo.txt")
+    chunk2 = fread(f.chunkinfo,data.table = F,stringsAsFactors = F)
+    chunkdf = as.data.frame(rbind(chunk1,chunk2))
+    chunkinfo = unique(chunkdf)
   } else {
     cells.keep = paste0(gsub(" ","_",dfseurat@meta.data$subclust_v6),"_",dfseurat@meta.data$disease) == celltype_to_use
+    
+    pct.rna.keep = 0.05
+    pct.atac.keep = 0.05
+    
+    # extract genes and peaks that are to be tested:
+    chunkinfo = genes_peaks_overlap
+    colnames(chunkinfo)<-c("gene","peak")
+    chunkinfo = subset(chunkinfo,gene %in% genes.keep & peak %in% peaks.keep)
   }
   
-  pct.rna.keep = 0.05
-  pct.atac.keep = 0.05
   atac.all <- dfseurat@assays$ATAC@counts[,cells.keep]
   atac.all@x[atac.all@x > 1] <- 1
-  
-  pct.accessible = rowSums(atac.all)/ncol(atac.all)
-  peak.data = data.frame(peakid=rownames(atac.all),pct=pct.accessible)
-  ind.peaks.keep = pct.accessible > pct.atac.keep
-  peaks.keep = rownames(atac.all)[ind.peaks.keep]
-  # atac = atac.all[peaks.keep,]
-  
   mrna <- dfseurat@assays$RNA@counts[,cells.keep]
-  mrna.binarized = mrna
-  mrna.binarized@x[mrna.binarized@x > 1] <- 1
-  pct.expressed = rowSums(mrna.binarized)/ncol(mrna.binarized)
-  ind.genes.keep = pct.expressed > pct.rna.keep
+  
+  if (substrRight(celltype_to_use,4)=="_all") {
+    ind.peaks.keep <- rownames(atac.all) %in% unique(chunkinfo$peak)
+    ind.genes.keep <- rownames(mrna) %in% unique(chunkinfo$gene)
+  } else {
+    pct.accessible = rowSums(atac.all)/ncol(atac.all)
+    peak.data = data.frame(peakid=rownames(atac.all),pct=pct.accessible)
+    ind.peaks.keep = pct.accessible > pct.atac.keep
+    
+    mrna.binarized = mrna
+    mrna.binarized@x[mrna.binarized@x > 1] <- 1
+    pct.expressed = rowSums(mrna.binarized)/ncol(mrna.binarized)
+    ind.genes.keep = pct.expressed > pct.rna.keep
+  }
+
+  peaks.keep = rownames(atac.all)[ind.peaks.keep]
   genes.keep = rownames(mrna)[ind.genes.keep]
-  
-  # extract genes and peaks that are to be tested:
-  chunkinfo = genes_peaks_overlap
-  colnames(chunkinfo)<-c("gene","peak")
-  chunkinfo = subset(chunkinfo,gene %in% genes.keep & peak %in% peaks.keep)
-  
-  fDir = "/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input"
+
   f.atac_out = paste0(fDir,"/atac/",celltype_to_use,".atac.rds")
   f.rna_out = paste0(fDir,"/rna/",celltype_to_use,".rna.rds")
   f.meta_out = paste0(fDir,"/meta/meta.",celltype_to_use,".rds")
@@ -129,7 +142,7 @@ for (celltype_to_use in unique(dfseurat@meta.data$celltype)) {
   fwrite(chunkinfo,f.chunkinfo,quote = F,na = "NA",sep = '\t',row.names = F,col.names = T)
   
   source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/assemble_parallel_files.R")
-  assemble_parallel_files(celltype_to_use=celltype_to_use,projName="tmparm2",read_files=TRUE,num_links_per_chunk=500)
+  assemble_parallel_files(celltype_to_use=celltype_to_use,projName="tmparm3",read_files=TRUE,num_links_per_chunk=100)
   
 }
 

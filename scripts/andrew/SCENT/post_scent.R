@@ -1,7 +1,7 @@
 # post_scent.R
 
 library(data.table)
-celltype_to_use="HSCs_T21"
+celltype_to_use="HSCs_T21.down"
 fDir="/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/out_split"
 fnums=paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/input/info/",celltype_to_use,"_nums")
 nums = fread(fnums,data.table = F,stringsAsFactors = F,header = F)

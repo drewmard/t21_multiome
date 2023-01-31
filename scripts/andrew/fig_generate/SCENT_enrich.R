@@ -2,21 +2,30 @@ library(data.table)
 
 # 0. SCENT!
 celltype_to_use="HSCs_H"
-output_file = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out1/",celltype_to_use,".txt")
+# output_file = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out1/",celltype_to_use,".txt")
+output_file = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out_split/all/",celltype_to_use,".all.txt")
 res.df.h = fread(output_file,data.table = F,stringsAsFactors = F)
 
 celltype_to_use="HSCs_T21"
-output_file = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out2/",celltype_to_use,".txt")
+# output_file = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out2/",celltype_to_use,".txt")
+output_file = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out_split/all/",celltype_to_use,".all.txt")
 res.df.t21 = fread(output_file,data.table = F,stringsAsFactors = F)
 
 # ggplot(res.df.t21,aes(x=-log10(p),y=-log10(pval))) + geom_point() + geom_abline(slope=1,intercept=0)
 
 res.df.mg = merge(res.df.h,res.df.t21,all=TRUE,by=c("gene","peak"))
+tmp = subset(res.df.mg,fdr.y < 0.05 & !is.na(fdr.x))
+tmp = subset(res.df.mg,fdr.y > 0.1 & fdr.y < 0.2 & !is.na(fdr.x))
+mean(tmp$pval.x < 0.05)
+tmp = subset(res.df.mg,fdr.y > 0.05 & fdr.y < 0.1 & !is.na(fdr.x))
+mean(tmp$pval.x < 0.05)
+
+
+sum(res.df.mg$fdr.x < 0.2,na.rm = T)
+sum(res.df.mg$fdr.y < 0.2,na.rm = T)
 
 cor(res.df.mg$beta.x,res.df.mg$beta.y,use='na.or.complete')
-subset(res.df.mg,fdr.x < 0.2 & fdr.y < 0.2 & sign(beta.x)!=sign(beta.y))
-
-
+nrow(subset(res.df.mg,fdr.x < 0.2 & fdr.y < 0.2 & sign(beta.x)==sign(beta.y)))
 
 gene=chunkinfo$gene[i]
 this_peak=chunkinfo$peak[i]
@@ -68,14 +77,14 @@ dim(trait_fm.sub)
 nrow(subset(trait_fm,V5 > 0.9)[,c("V1","V3","V4","V5","V9")])
 colnames(trait_fm.sub) = c("chr","snp_pos","rsid","pip","peak")
 
-# b: subset to those SNPs that lie in SCENT peaks
-trait_fm = fread("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out1/rbc_peaks_overlap.bed",data.table = F,stringsAsFactors = F)
-trait_fm.sub = trait_fm[,c("V1","V3","V4","V5","V9")]
-colnames(trait_fm.sub) = c("chr","snp_pos","rsid","pip","peak")
-trait_fm.sub = subset(trait_fm,V5 > 0.2)[,c("V1","V3","V4","V5","V9")]
-dim(trait_fm.sub)
-nrow(subset(trait_fm,V5 > 0.9)[,c("V1","V3","V4","V5","V9")])
-colnames(trait_fm.sub) = c("chr","snp_pos","rsid","pip","peak")
+# # b: subset to those SNPs that lie in SCENT peaks
+# trait_fm = fread("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/out1/rbc_peaks_overlap.bed",data.table = F,stringsAsFactors = F)
+# trait_fm.sub = trait_fm[,c("V1","V3","V4","V5","V9")]
+# colnames(trait_fm.sub) = c("chr","snp_pos","rsid","pip","peak")
+# trait_fm.sub = subset(trait_fm,V5 > 0.2)[,c("V1","V3","V4","V5","V9")]
+# dim(trait_fm.sub)
+# nrow(subset(trait_fm,V5 > 0.9)[,c("V1","V3","V4","V5","V9")])
+# colnames(trait_fm.sub) = c("chr","snp_pos","rsid","pip","peak")
 
 # 2. find the subset of peaks that are linked to genes
 # df.sub = merge(subset(res.df.mg,!is.na(beta.y) & fdr.y < 0.1),subset(trait_fm.sub,pip>0.2),by="peak")
@@ -102,7 +111,7 @@ df.sub2$fm = !(df.sub2$pip <= 0.2 | is.na(df.sub2$pip))
 df.sub2[1,]
 subset(df.sub2,fdr_t21 < 0.1 & adj.P.Val_smATAC < 0.1 & adj.P.Val_lgRNA < 0.1 & adj.P.Val_smRNA < 0.1 & fm)
 subset(df.sub2,fdr_t21 < 0.1 & adj.P.Val_smATAC < 0.1 & adj.P.Val_lgRNA < 0.1 & P.Value_smRNA < 0.05 & fm)
-subset(df.sub2,fdr_t21 < 0.2 & P.Value_smATAC < 0.1 & P.Value_lgRNA < 1 & P.Value_smRNA < 0.1 & fm=="TRUE")
+subset(df.sub2,fdr_t21 < 0.2 & P.Value_smATAC < 0.05 & P.Value_cycHSC < 0.05 & fm=="TRUE")
 subset(df.sub2,fdr_t21 < 0.1 & fm=="TRUE")
 subset(df.sub2,fdr_t21 < 0.2 & fm=="TRUE" & P.Value_lgRNA < 0.05)
 subset(df.sub2,fdr_t21 < 0.2 & fm=="TRUE" & P.Value_lgRNA < 0.2)

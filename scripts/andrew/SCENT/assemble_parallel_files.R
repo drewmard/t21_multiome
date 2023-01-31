@@ -3,7 +3,7 @@ library(data.table)
 # celltype_to_use = "HSCs_T21"
 # projName="tmparm"
 
-assemble_parallel_files <- function(projName,celltype_to_use,read_files=FALSE) {
+assemble_parallel_files <- function(projName,celltype_to_use,read_files=FALSE,num_links_per_chunk=500) {
   
   
   if (read_files) {
@@ -27,7 +27,7 @@ assemble_parallel_files <- function(projName,celltype_to_use,read_files=FALSE) {
   dir.create(paste0(fDir,"/info"),showWarnings = FALSE)
   if (file.exists(paste0(fDir,"/info/nums"))) {file.remove(paste0(fDir,"/info/nums"),showWarnings = FALSE)}
   
-  rng = seq(1,nrow(chunkinfo),by=500)
+  rng = seq(1,nrow(chunkinfo),by=num_links_per_chunk)
   fwrite(data.frame(1:length(rng)),paste0(fDir,"/info/",celltype_to_use,"_nums"),row.names = F,col.names = F,quote = F,na = "NA",sep = "\t")
   
   for (i in 1:length(rng)) {

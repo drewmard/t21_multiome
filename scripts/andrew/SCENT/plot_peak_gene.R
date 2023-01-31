@@ -29,6 +29,8 @@ library(Signac)
 dfseurat = readRDS("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/data/Multiome.RNA_ATAC.HSC_only.rds")
 
 gene_of_interest = "RAPGEF2"; peak_of_interest = "chr4-159150290-159152052"
+gene_of_interest = "PEX14"; peak_of_interest = "chr1-10474439-10475771"
+gene_of_interest = "TFR2"; peak_of_interest = "chr7-100639909-100642992"
 
 gene_ct = dfseurat@assays$RNA@counts[gene_of_interest,]
 gene=dfseurat@assays$RNA@data[gene_of_interest,]
@@ -50,16 +52,29 @@ aggregate(mrna~atac,subset(df,disease=="T21"),length)
 library(data.table)
 library(ggplot2)
 gene_of_interest = "RAPGEF2"; peak_of_interest = "chr4-159150290-159152052"
+gene_of_interest = "PEX14"; peak_of_interest = "chr1-10474439-10475771"
+gene_of_interest = "TFR2"; peak_of_interest = "chr7-100639909-100642992"
 f = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scent/plots/peak_gene_link.",gene_of_interest,".",peak_of_interest,".txt")
 df = fread(f,data.table = F,stringsAsFactors = F)
 head(df)
-ggplot(df,aes(x=disease,y=rna,fill=as.factor(atac.bin))) + geom_boxplot() + 
-  labs(fill="chr4-\n159150290-\n159152052\n\nAccessibility",x='Disease status',y="RAPGEF2 Expression") +
+ggplot(df,aes(x=disease,y=rna,fill=as.factor(atac.bin))) + 
+  geom_boxplot() + #(outlier.shape=NA) + #,width=0.2) +
+  # geom_point(alpha=0.6) +
+  # geom_jitter(width=0.1) +
+  labs(fill="Accessibility",x='Disease status',y=paste0(gene_of_interest," Expression")) +
   scale_fill_manual(values=c('lightblue','orange'),labels=c("Not open","Open")) +
+  # scale_colour_manual(values=c('lightblue','orange'),labels=c("Not open","Open")) +
   theme_bw() + theme(panel.grid = element_blank())
 # ggplot(df,aes(x=atac,y=rna,col=as.factor(disease))) + geom_point()
 
+summary(lm(rna~atac.bin,data=df))
 
+aggregate(rna ~ disease + atac.bin,df,mean)
+
+summary(lm(rna ~ disease + (atac > 0),df))
+summary(lm(rna ~ (atac > 0),subset(df,disease=="T21")))
+
+aggregate(rna ~ disease + atac.bin,df,median)
 
 
 

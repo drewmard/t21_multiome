@@ -204,6 +204,7 @@ for (gene_of_interest in gene_of_interest_lst) {
 }
 
 # L-P
+library(data.table)
 df = fread("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/data/hsc.kmeans.UMAP.txt",data.table = F,stringsAsFactors = F)
 
 # L
