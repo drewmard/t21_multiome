@@ -27,7 +27,7 @@ source("/oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/
 
 projName="tmparm3"
 celltype_to_use = "HSCs_all"
-num=185
+num=325
 
 args = commandArgs(trailingOnly=TRUE)
 print(paste(length(args),"arguments."))

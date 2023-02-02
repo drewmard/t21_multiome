@@ -85,6 +85,7 @@ create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05) {
   if (use_interaction=="TRUE") {
     df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
     df2.input = df2[,c("exprs","atac_disease0","atac","disease0","percent_mito","log_nUMI","sample")]
+    df2.input$disease0 = as.numeric(df2$disease0!="H")
   } else {
     df2.input = df2[,c("exprs","atac","percent_mito","log_nUMI","sample")]
   }
