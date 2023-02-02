@@ -192,6 +192,7 @@ create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=TRUE,iter_pri
         df2.input = create_input_data(i = i,drop_sample=TRUE)
         out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)
       }
+    )
     return(out)
   } else {
     return(data.frame())
