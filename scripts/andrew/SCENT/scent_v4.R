@@ -55,7 +55,7 @@ substrRight <- function(x, n){
   substr(x, nchar(x)-n+1, nchar(x))
 }
 
-create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05) {
+create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05,drop_sample=FALSE) {
   gene=chunkinfo$gene[i]
   this_peak=chunkinfo$peak[i]
   atac_target<-data.frame(cell=colnames(atac.all),atac=as.numeric(atac.all[this_peak,]))
@@ -82,7 +82,11 @@ create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05) {
   # create log nUMI column
   df2$log_nUMI = log(df2$nUMI)
   
-  if (use_interaction=="TRUE") {
+  if (use_interaction=="TRUE" & drop_sample==TRUE) {
+    df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
+    df2.input = df2[,c("exprs","atac_disease0","atac","disease0","percent_mito","log_nUMI")]
+    df2.input$disease0 = as.numeric(df2$disease0!="H")
+  } else if (use_interaction=="TRUE") {
     df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
     df2.input = df2[,c("exprs","atac_disease0","atac","disease0","percent_mito","log_nUMI","sample")]
     df2.input$disease0 = as.numeric(df2$disease0!="H")
@@ -179,8 +183,15 @@ create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=TRUE,iter_pri
   if (run_bs) {print(i)}
   if ( (i %% iter_print) == 0) {print(i)} # print update i every $iter_print iterations
   df2.input = create_input_data(i = i)
+  # df2.input$exprs = df2.input$exprs + 1e-100
   if(!is.null(df2.input)){
-    out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)
+    set.seed(03191995)
+    tryCatch(
+      {out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)},
+      error = function(e) {
+        df2.input = create_input_data(i = i,drop_sample=TRUE)
+        out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)
+      }
     return(out)
   } else {
     return(data.frame())
