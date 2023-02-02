@@ -55,7 +55,7 @@ substrRight <- function(x, n){
   substr(x, nchar(x)-n+1, nchar(x))
 }
 
-create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05,drop_sample=FALSE) {
+create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05,drop_sample=FALSE,drop_disease=FALSE) {
   gene=chunkinfo$gene[i]
   this_peak=chunkinfo$peak[i]
   atac_target<-data.frame(cell=colnames(atac.all),atac=as.numeric(atac.all[this_peak,]))
@@ -82,16 +82,18 @@ create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05,drop_sample=
   # create log nUMI column
   df2$log_nUMI = log(df2$nUMI)
   
-  if (use_interaction=="TRUE" & drop_sample==TRUE) {
-    df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
-    df2.input = df2[,c("exprs","atac_disease0","atac","disease0","percent_mito","log_nUMI")]
-    df2.input$disease0 = as.numeric(df2$disease0!="H")
-  } else if (use_interaction=="TRUE") {
+  if (use_interaction=="TRUE") {
     df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
     df2.input = df2[,c("exprs","atac_disease0","atac","disease0","percent_mito","log_nUMI","sample")]
     df2.input$disease0 = as.numeric(df2$disease0!="H")
   } else {
     df2.input = df2[,c("exprs","atac","percent_mito","log_nUMI","sample")]
+  }
+  if (drop_disease) {
+    df2.input = df2.input[,colnames(df2.input)!="disease0"]
+  }
+  if (drop_sample) {
+    df2.input = df2.input[,colnames(df2.input)!="sample"]
   }
   return(df2.input)
 }
@@ -187,9 +189,9 @@ create_input_and_run_SCENT <- function(i,run_bs=TRUE,bootstrap_sig=TRUE,iter_pri
   if(!is.null(df2.input)){
     set.seed(03191995)
     tryCatch(
-      {out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)},
+      {out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig,drop_disease=TRUE)}, #drop disease leads to identical interaction p value results in interaction model
       error = function(e) {
-        df2.input = create_input_data(i = i,drop_sample=TRUE)
+        df2.input = create_input_data(i = i,drop_disease=TRUE,drop_sample=TRUE)
         out = SCENT(df2.input = df2.input,i=i,run_bs=run_bs,bootstrap_sig=bootstrap_sig)
       }
     )
