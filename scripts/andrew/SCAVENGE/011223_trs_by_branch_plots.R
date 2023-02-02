@@ -54,6 +54,24 @@ for (traitName in c("rbc","wbc","lymph")) {
   dev.off()
 }
 
+
+diseaseType="H"
+for (diseaseType in c("H","T21")) { 
+  p2 = ggplot(subset(df.mg,!is.na(TRS) & disease==diseaseType),aes(x=as.factor(lin),y=(TRS))) + 
+    geom_jitter(width=0.15,aes(col=(TRS)),alpha=0.6) + 
+    geom_boxplot(outlier.shape=NA,alpha=0.8,fill='gray94',lwd=1,width=0.3,col="#FB8072") + 
+    ggpubr::theme_pubr() +
+    labs(x="HSC Branch",y=paste0("SCAVENGE TRS (",traitName,")")) +
+    guides(col="none") +
+    scale_color_gradient(high=viridis[length(viridis)],low=viridis[3]) + labs(col="") +
+    scale_x_discrete(labels=paste0(tmp[,1])); p2
+  f.plot = paste0("/Users/andrewmarderstein/Documents/Research/t21_multiome/output/scavenge_plots/HSCs.",traitName,".gwas_enriched.lin.disease_",diseaseType,".boxplot.pdf")
+  pdf(f.plot,width=3.8,height=5)
+  print(p2)
+  dev.off()
+}
+
+
 cor(df.mg$TRS,df.mg$Lineage_3_prob,use='na.or.complete')
 cor(df.mg$TRS,df.mg$Lineage_2_prob,use='na.or.complete')
 cor(df.mg$TRS,df.mg$Lineage_1_prob,use='na.or.complete')

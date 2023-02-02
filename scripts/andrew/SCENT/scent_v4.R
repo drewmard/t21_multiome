@@ -84,7 +84,7 @@ create_input_data = function(i,pct.rna.keep=0.05,pct.atac.keep=0.05) {
   
   if (use_interaction=="TRUE") {
     df2$atac_disease0 <- df2$atac*as.numeric(df2$disease0!="H")
-    df2.input = df2[,c("exprs","atac_disease0","atac","percent_mito","log_nUMI","sample")]
+    df2.input = df2[,c("exprs","atac_disease0","atac","disease0","percent_mito","log_nUMI","sample")]
   } else {
     df2.input = df2[,c("exprs","atac","percent_mito","log_nUMI","sample")]
   }
@@ -146,6 +146,14 @@ bootstrapping_sig = function(df2.input,i,pval,res.df=NULL) {
 }
 
 SCENT = function(df2.input,i,run_bs=TRUE,bootstrap_sig=FALSE) {
+  # print("SCENT")
+  if (sum(df2.input$atac_disease0)==0) {
+    gene=chunkinfo$gene[i]
+    this_peak=chunkinfo$peak[i]
+    out <- data.frame(i=i,gene=gene,peak=this_peak,beta=NA,se=NA,z=NA,p=NA,boot_basic_p=NA)
+    return(out)
+  }
+  
   # poisson
   base = glm(exprs ~ ., family = 'poisson', data = df2.input) # why do raw counts instead of normalization? or voom re-weighting?
   coefs<-summary(base)$coefficients[coef_to_use,]

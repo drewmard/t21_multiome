@@ -51,6 +51,11 @@ df.sub2 = merge(df.sub2,large_RNA_pb,by.x='gene',by.y='names_lgRNA',all.x=T)
 df.sub2 = merge(df.sub2,cyc_HSC_pb,by.x='gene',by.y='names_cycHSC',all.x=T)
 df.sub2$fm = !(df.sub2$pip <= 0.2 | is.na(df.sub2$pip))
 
+# to remove duplicates...
+df.sub2 = df.sub2[order(-df.sub2$pip,df.sub2$p_t21),]
+df.sub2 = df.sub2[!duplicated(df.sub2[,c("peak","gene")]),]
+df.sub2 = df.sub2[order(df.sub2$gene,df.sub2$peak),]
+
 fwrite(df.sub2,"~/Documents/Research/t21_multiome/output/scent/out_split/all/HSCs.DE.txt",quote = F,na = "NA",sep = "\t",row.names = F,col.names = T)
 
 t.test(-log10(df.sub2$boot_basic_p_t21),-log10(df.sub2$boot_basic_p_H))

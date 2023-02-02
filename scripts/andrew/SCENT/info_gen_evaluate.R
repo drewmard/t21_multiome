@@ -1,4 +1,5 @@
 library(data.table)
+library(ggplot2)
 expr.data = list()
 peak.data = list()
 celltype_to_use = "HSCs_H"
@@ -25,6 +26,7 @@ df = fread("~/Documents/Research/t21_multiome/output/scent/out_split/all/HSCs.DE
 df = merge(df,expr.data,by='gene')
 df = merge(df,peak.data,by='peak')
 df.sub = subset(df,fdr_H > 0.2 & fdr_t21_dn < 0.2)
+# df.sub = subset(df,fdr_H < 0.2 & fdr_t21_dn > 0.2)
 t.test(df.sub$acc_H,df.sub$acc_t21)
 t.test(df.sub$expr_H,df.sub$expr_t21)
 ggplot(df.sub,aes(x=acc_H,y=acc_t21)) + geom_point() + 
