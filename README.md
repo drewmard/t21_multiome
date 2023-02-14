@@ -1,23 +1,9 @@
 # t21_multiome
 
-RNA + ATAC in T21 and healthy fetal liver samples
+Scripts for the 10X multiome analysis (RNA + ATAC) in T21 and healthy fetal liver samples, as detailed in "Single-cell multi-omics map of human foetal liver and bone marrow in Down's Syndrome" by Marderstein et al.
 
-## Notes
-
-- I made a directory "scripts" with subdirectories "scripts/andrew" and "scripts/jon"
-- I also made a directory "output" that is in .gitignore so any output here will not be pushed to github (useful for generating large data & saving)
-
-## Paths
-
-#### Healthy datasets
-- **ATAC (Scanpy):** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_h_v2/Multiome.ATAC_only2.h.h5ad
-- **RNA (Scanpy):** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_h_v2/Multiome.RNA_only2.h.h5ad
-- **chromvar:** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_h_v2/h.ChromVAR.txt
-
-#### T21 datasets:
-- **ATAC (Scanpy):** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_ds_v2/Multiome.ATAC_only2.ds.h5ad
-- **RNA (Scanpy):** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_ds_v2/Multiome.RNA_only2.ds.h5ad
-- **chromVAR:** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_ds_v2/ds.ChromVAR.txt
-
-#### Other data: 
-- **TF motif ID to TF name dataframe:** /oak/stanford/groups/smontgom/amarder/neuro-variants/output/data/DS_Multiome_ds_v2/motif_gene.ChromVAR.txt
+- **SCAVENGE**
+- **SCENT** (includes any scripts relevant to the SCENT analysis)
+- **jon** (Python notebooks detailing the MIRA analysis led by Jon Bezney)
+- **etc** (includes misc scripts)
+- **andrew** is a folder containing draft scripts that is currently being kept for housekeeping purposes
