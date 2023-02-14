@@ -1,5 +1,7 @@
 # SCENT
 
+## Important scripts to run SCENT:
+
 #### pre_scent.R
 
 Uses **assemble_parallel_files.R** to create the input for SCENT analysis.
