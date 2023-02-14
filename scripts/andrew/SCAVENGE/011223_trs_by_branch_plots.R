@@ -1,6 +1,8 @@
 library(data.table)
 traitName="rbc"
 traitName="wbc"
+traitName="lymph"
+
 for (traitName in c("rbc","wbc","lymph")) { 
   f = paste0("~/Documents/Research/t21_multiome/output/scavenge/",traitName,".txt")
   df = fread(f,data.table = F,stringsAsFactors = F)

@@ -10,7 +10,7 @@ use_interaction=TRUE
 line=185
 
 while read -r line; do
-sbatch --account=smontgom --partition=batch --time=1-1:00:00 --mem=4G --nodes=1 --ntasks=1 /oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/andrew/SCENT/run_scent.sh $projName $celltype_to_use $line $downsample $use_interaction
+sbatch --account=smontgom --partition=batch --time=1-1:00:00 --mem=4G --nodes=1 --ntasks=1 /oak/stanford/groups/smontgom/amarder/t21_multiome/scripts/SCENT/run_scent.sh $projName $celltype_to_use $line $downsample $use_interaction
 echo $line
 done < $dir/$num
 

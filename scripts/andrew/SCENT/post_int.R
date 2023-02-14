@@ -1,28 +1,73 @@
 library(data.table)
 df = fread("~/Documents/Research/t21_multiome/output/scent/out_split/all/HSCs.DE.txt",data.table = F,stringsAsFactors = F)
-# subset(df,gene=="AFF3" & peak=="chr2-100141820-100142865")
-
-library(data.table)
-df = fread("~/Documents/Research/t21_multiome/output/scent/out_split/all/HSCs.DE.txt",data.table = F,stringsAsFactors = F)
 
 dfint = fread("~/Documents/Research/t21_multiome/output/scent/out_split/all/HSCs_all.all.txt",data.table = F,stringsAsFactors = F)
 df.mg = merge(df,dfint,by = c("gene",'peak'))
 
 df$gene_peak = paste(df$peak,df$gene)
 dfint$gene_peak = paste(dfint$peak,dfint$gene)
-sum(!(df$gene_peak %in% dfint$gene_peak))
-sum(duplicated(df$gene_peak))
-df[duplicated(df$gene_peak),][1:3,]
-subset(df,gene=="HERC3" & peak=="chr4-88612949-88613880")
-sum(duplicated(df$gene_peak))
-
-df[7973,]
+tmp = subset(dfint,gene_peak %in% subset(df,fdr_H < 0.2 | fdr_t21 < 0.2)$gene_peak)
+tmp = tmp[,c("gene_peak","beta","se","z","p","boot_basic_p","fdr")]
+colnames(tmp)[-1] = paste0(colnames(tmp)[-1],"_int")
+df.mg = merge(df,tmp,by="gene_peak",all.x = "TRUE")
+df.mg = df.mg[order(df.mg$gene,df.mg$peak),]
+f.out = paste0("~/Documents/Research/t21_multiome/output/scent/out_split/all/HSCs.DE.int.txt")
+fwrite(df.mg,f.out,quote = F,na = "NA",sep = '\t',row.names = F,col.names = T)
 
 df.mg.sub = subset(df.mg,fdr_H < 0.2 | fdr_t21 < 0.2)
 df.mg.sub$fdr = p.adjust(df.mg.sub$pval,method='fdr')
 
-sum(df.mg$fdr_H < 0.2 & df.mg$fdr_t21 < 0.2,na.rm = T)
+sum(df.mg.sub$fdr_H < 0.2,na.rm = T)
+sum(df.mg.sub$fdr_t21 < 0.2,na.rm = T)
+sum(df.mg$fdr_t21_dn < 0.2,na.rm = T)
+sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2,na.rm = T)
+table(subset(df.mg.sub,fdr_H < 0.2 & (fdr_t21 > 0.2 | is.na(fdr_t21)))$fdr < 0.2)
+table(subset(df.mg.sub,fdr_H < 0.2 & (fdr_t21 > 0.2 | is.na(fdr_t21)))$fdr < 0.2)
+table(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)))$fdr < 0.2)
 
+dim(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H))))
+dim(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)) & fdr < 0.2))
+# df.mg.sub.t21 = subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)) & fdr < 0.2)
+df.mg.sub.t21 = subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)) & fdr > 0.2)
+head(df.mg.sub.t21)
+gene.t21 = unique(df.mg.sub.t21$gene)
+peak.t21 = unique(df.mg.sub.t21$peak)
+
+tab = table(tmp$P.Value_lgRNA < 0.05 & tmp$logFC_lgRNA > 0)
+large_RNA_pb = fread("~/Documents/Research/t21-proj/out/full/DE_pb_leiden_names/Liver.HSCs_MPPs.sample.txt",data.table = F,stringsAsFactors = F)
+tmp = subset(large_RNA_pb,names %in% gene.t21)
+tab = table(tmp$P.Value < 0.05 & tmp$logFC > 0)
+mu = mean(large_RNA_pb$P.Value < 0.05 & large_RNA_pb$logFC > 0,na.rm=T)
+binom.test(tab["TRUE"],tab["TRUE"] + tab["FALSE"],mu)
+
+small_ATAC_pb = fread("~/Downloads/pb_de_atac.hsc.txt",data.table = F,stringsAsFactors = F)
+tmp = subset(small_ATAC_pb,names %in% peak.t21)
+tab = table(tmp$P.Value < 0.05 & tmp$logFC > 0)
+mu = mean(small_ATAC_pb$P.Value < 0.05 & small_ATAC_pb$logFC > 0,na.rm=T)
+binom.test(tab["TRUE"],tab["TRUE"] + tab["FALSE"],mu)$p.value
+
+sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2,na.rm = T)
+sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2 & df.mg.sub$fdr < 0.2,na.rm = T)
+
+small_RNA_pb = fread("~/Downloads/pb_de.hsc.txt",data.table = F,stringsAsFactors = F)
+tmp = subset(small_RNA_pb,names %in% gene.t21)
+tab = table(tmp$logFC > 0)
+mu = mean(small_RNA_pb$logFC > 0,na.rm=T)
+binom.test(tab["TRUE"],tab["TRUE"] + tab["FALSE"],mu)
+
+nrow(df.mg.sub.t21)
+                       
+                       
+tmp = subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)) & fdr > 0.2 & !duplicated(gene))
+# tmp$gene
+# mean(tmp$P.Value_lgRNA < 0.05 & tmp$logFC_lgRNA > 0,na.rm=T)
+tab = table(tmp$P.Value_lgRNA < 0.05 & tmp$logFC_lgRNA > 0)
+large_RNA_pb = fread("~/Documents/Research/t21-proj/out/full/DE_pb_leiden_names/Liver.HSCs_MPPs.sample.txt",data.table = F,stringsAsFactors = F)
+mu = mean(large_RNA_pb$P.Value < 0.05 & large_RNA_pb$logFC > 0,na.rm=T)
+binom.test(tab["TRUE"],tab["TRUE"] + tab["FALSE"],mu)
+
+113/122
+  
 mean(df.mg$fdr < 0.2)
 plot(df.mg$beta_t21-df.mg$beta_H,df.mg$beta)
 nrow(df.mg.sub)
