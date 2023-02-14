@@ -16,5 +16,11 @@ This compiles all SCENT output into a single file.
 
 **create_scent_supp_table.R**: create SCENT supplementary table
 
+**peak_gene_enrichment_plot.R**: make peak-gene enrichment forest plot w/ RBC GWAS
 
+**plot_region_of_interest.R**: plot peak accessibility + gene expression tracks
+
+**peak_gene_summarize_plot.R**: chromosomal distribution of peak-gene links
+
+**HSC_pb.R**: pseudobulk plots of genes
 
