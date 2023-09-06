@@ -1,0 +1,7 @@
+id=T21
+fastafile=/oak/stanford/groups/smontgom/shared/genomes/hg38/Homo_sapiens/UCSC/hg38/Sequence/WholeGenomeFasta/genome.fa
+bedfile=/oak/stanford/groups/smontgom/amarder/data/hasaart_et_al_2020_scirep/hg38/homer/${id}.intron.bed
+outfile=/oak/stanford/groups/smontgom/amarder/tmp/${id}.fa.out
+mamba activate bedtools
+bedtools getfasta -fi $fastafile -bed $bedfile -fo $outfile
+mamba deactivate

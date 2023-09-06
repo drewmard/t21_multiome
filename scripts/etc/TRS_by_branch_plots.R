@@ -27,6 +27,8 @@ for (traitName in c("rbc","wbc","lymph")) {
   wilcox.test(df.mg$TRS[df.mg$lin==3],df.mg$TRS[df.mg$lin==2])
   wilcox.test(df.mg$TRS[df.mg$lin==1],df.mg$TRS[df.mg$lin==3])
   
+  wilcox.test(df.mg$TRS[df.mg$lin==2],df.mg$TRS[df.mg$lin!=2])
+  
   viridis = c("#440154FF", "#472D7BFF", "#3B528BFF", "#2C728EFF", "#21908CFF", "#27AD81FF",
               "#5DC863FF", "#AADC32FF", "#FDE725FF")
   library(ggplot2)

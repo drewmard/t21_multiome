@@ -32,10 +32,17 @@ g = CoveragePlot(
   object = dfseurat,
   region = peak_of_interest,
   features = gene_of_interest,
+  annotation = "transcript",
   extend.upstream = 100,
   extend.downstream = 100
 ) & scale_fill_manual(values=col_to_use)
-f.plot = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/plots/peak_coverage_plot.",gene_of_interest,".pdf")
+# f.plot = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/plots/peak_coverage_plot.",gene_of_interest,".pdf")
 pdf(f.plot,height=3.5,width=10)
 print(g)
 dev.off()
+
+f.plot = paste0("/oak/stanford/groups/smontgom/amarder/t21_multiome/output/scent/plots/peak_coverage_plot.",gene_of_interest,".transcript.pdf")
+pdf(f.plot,height=23.5,width=10)
+print(g)
+dev.off()
+

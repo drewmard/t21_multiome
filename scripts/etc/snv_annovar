@@ -1,0 +1,12 @@
+module load annovar/2020-06-07
+
+# id=T21
+id=D21
+
+dir=/oak/stanford/groups/smontgom/amarder/data/hasaart_et_al_2020_scirep/hg38/homer
+cat $dir/$id.intron.bed | cut -f1-3 | awk '$4="0",$5="0"' | sed 's/^chr//' > $dir/$id.intron.input.bed
+
+database=/oak/stanford/groups/smontgom/amarder/bin/annovar/humandb/
+inputFile=/oak/stanford/groups/smontgom/amarder/data/hasaart_et_al_2020_scirep/hg38/homer/$id.intron.input.bed
+outputPrefix=/oak/stanford/groups/smontgom/amarder/tmp/$id
+time annotate_variation.pl -out $outputPrefix -build hg38 $inputFile $database

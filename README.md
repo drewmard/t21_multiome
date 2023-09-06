@@ -1,8 +1,10 @@
-# t21_multiome
+# 10X multiome scripts
 
-Scripts for the 10X multiome analysis (RNA + ATAC) in T21 and healthy fetal liver samples, as detailed in "Single-cell multi-omics map of human foetal liver and bone marrow in Down's Syndrome" by Marderstein et al.
+Scripts for the 10X multiome analysis (RNA + ATAC) in trisomy and disomy foetal liver samples, as related to the following manuscript:
 
-- **SCAVENGE**
+Marderstein, A.R. et al. (2023). Single-cell multi-omics map of human foetal blood in Down's Syndrome. biorxiv.
+
+- **SCAVENGE** (includes the primary script for running SCAVENGE)
 - **SCENT** (includes any scripts relevant to the SCENT analysis)
 - **jon** (Python notebooks detailing the MIRA analysis led by Jon Bezney)
 - **etc** (includes misc scripts)

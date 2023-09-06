@@ -15,15 +15,15 @@ f.out = paste0("~/Documents/Research/t21_multiome/output/scent/out_split/all/HSC
 fwrite(df.mg,f.out,quote = F,na = "NA",sep = '\t',row.names = F,col.names = T)
 
 df.mg.sub = subset(df.mg,fdr_H < 0.2 | fdr_t21 < 0.2)
-df.mg.sub$fdr = p.adjust(df.mg.sub$pval,method='fdr')
+# df.mg.sub$fdr = p.adjust(df.mg.sub$pval,method='fdr')
 
 sum(df.mg.sub$fdr_H < 0.2,na.rm = T)
 sum(df.mg.sub$fdr_t21 < 0.2,na.rm = T)
 sum(df.mg$fdr_t21_dn < 0.2,na.rm = T)
 sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2,na.rm = T)
-table(subset(df.mg.sub,fdr_H < 0.2 & (fdr_t21 > 0.2 | is.na(fdr_t21)))$fdr < 0.2)
-table(subset(df.mg.sub,fdr_H < 0.2 & (fdr_t21 > 0.2 | is.na(fdr_t21)))$fdr < 0.2)
-table(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)))$fdr < 0.2)
+table(subset(df.mg.sub,fdr_H < 0.2 & (fdr_t21 > 0.2 | is.na(fdr_t21)))$fdr_int < 0.2)
+table(subset(df.mg.sub,fdr_H < 0.2 & (fdr_t21 > 0.2 | is.na(fdr_t21)))$fdr_int < 0.2)
+table(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)))$fdr_int < 0.2)
 
 dim(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H))))
 dim(subset(df.mg.sub,fdr_t21 < 0.2 & (fdr_H > 0.2 | is.na(fdr_H)) & fdr < 0.2))
@@ -47,7 +47,7 @@ mu = mean(small_ATAC_pb$P.Value < 0.05 & small_ATAC_pb$logFC > 0,na.rm=T)
 binom.test(tab["TRUE"],tab["TRUE"] + tab["FALSE"],mu)$p.value
 
 sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2,na.rm = T)
-sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2 & df.mg.sub$fdr < 0.2,na.rm = T)
+sum(df.mg.sub$fdr_H < 0.2 & df.mg.sub$fdr_t21 < 0.2 & df.mg.sub$fdr_int < 0.2,na.rm = T)
 
 small_RNA_pb = fread("~/Downloads/pb_de.hsc.txt",data.table = F,stringsAsFactors = F)
 tmp = subset(small_RNA_pb,names %in% gene.t21)
