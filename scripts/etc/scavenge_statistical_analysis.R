@@ -36,7 +36,7 @@ mod <- lm(TRS.x ~ lin2 + TRS.y, data = tmp)
 y=summary(mod)$coef[2,4]
 mod <- lm(TRS.x ~ lin3 + TRS.y, data = tmp)
 z=summary(mod)$coef[2,4]
-res[[traitName]] = data.frame(x,y,z)
+res[[traitName]] = data.frame(trait=traitName,branch1=x,branch2=y,branch3=z)
 }
 res.df=melt(do.call(rbind,res))
 res.df$fdr = p.adjust(res.df$value,method='fdr')

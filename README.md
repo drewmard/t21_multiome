@@ -9,3 +9,11 @@ Marderstein, A.R. et al. (2023). Single-cell multi-omics map of human foetal blo
 - **jon** (Python notebooks detailing the MIRA analysis led by Jon Bezney)
 - **etc** (includes misc scripts)
 - **andrew** is a folder containing draft scripts that is currently being kept for housekeeping purposes
+
+### Other info
+
+Input data for scripts are based on the datasets that have been deposited on ArrayExpress.
+
+Install packages that are listed in the header of scripts prior to running them.
+
+Please reach out if there are questions about the analysis: amarder@stanford.edu.
