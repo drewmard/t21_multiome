@@ -1,9 +1,13 @@
 # snv
 # snvs in genes
+# module load R/4.1.2
 library(biomaRt)
-ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl",mirror = "useast")
-
 library(data.table)
+library(valr,lib.loc="/home/amarder/bin")
+
+# ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl",mirror = "useast")
+ensembl <- useEnsembl(biomart = "genes", dataset = "hsapiens_gene_ensembl")
+
 cre = fread("/oak/stanford/groups/smontgom/amarder/data/GRCh38-cCREs.bed",data.table=F,stringsAsFactors = F)
 # cre = fread("/oak/stanford/groups/smontgom/amarder/data/ENCFF394DBM.bed",data.table=F,stringsAsFactors = F)
 colnames(cre)[1:3] = c("chrom",'start','end')
