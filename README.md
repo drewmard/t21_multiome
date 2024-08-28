@@ -12,6 +12,8 @@ Scripts for the 10X multiome analysis (RNA + ATAC) in trisomy and disomy foetal 
 
 ## Table of Contents
 - [Introduction](#introduction)
+  - [Data Availability](#data-availability)
+  - [Other Information](#other-information)
 - [Scripts](#scripts)
   - [MIRA](#mira)
   - [Motifs](#motifs)
@@ -47,11 +49,23 @@ Scripts for the 10X multiome analysis (RNA + ATAC) in trisomy and disomy foetal 
 
 ## Introduction
 
+### Data Availability
+
 Input data for scripts are based on the datasets that have been deposited on ArrayExpress.
 
-Install packages that are listed in the header of scripts prior to running them.
+The following data has been deposited on ArrayExpress: 
+- **scRNA-seq FASTQ raw data and CellRanger count matrices** (accession number E-MTAB-13067)
+- **10x Visium FASTQ raw data, SpaceRanger count matrices, run summary metrics, and spatiality outputs** (E-MTAB-13062)
+- **Multiome snRNA-seq and snATAC-seq FASTQ raw data, CellRanger ARC count matrices, and ATAC fragment files** (E-MTAB-13070). 
 
-Please reach out if there are questions about the analysis: amarder@stanford.edu.
+### Other Information
+You will need to install packages that are listed in the header of scripts prior to running them.
+
+Can't find code relevant to the analysis that you are interested in? Please look here first:
+- **[GitLab repository for spatial transcriptomics and other scRNA-seq analyses](https://gitlab.com/cvejic-group/downsyndrome/)**
+- **[GitHub repository for 10X multiome analyses](https://github.com/drewmard/t21_multiome)**
+
+Please reach me at andrew.marderstein@gmail.com if there are questions about the analysis.
 
 ## Scripts
 
