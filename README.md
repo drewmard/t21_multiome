@@ -46,6 +46,7 @@ Scripts for the 10X multiome analysis (RNA + ATAC) in trisomy and disomy foetal 
     - [Intersect Peaks with Fine-Mapped GWAS SNPs](#intersect-peaks-with-fine-mapped-gwas-snps)
     - [TFR2 Overexpression Experiments (Statistical Analysis)](#tfr2-overexpression-experiments-statistical-analysis)
   - [Anndata to Seurat](#anndata-to-seurat)
+  - [Etc](#etc)
 
 ## Introduction
 
@@ -159,3 +160,7 @@ This folder contains scripts relevant to TF motif analyses.
 
 ### Anndata to Seurat
 - **anndata_to_seurat.R**
+
+### Etc
+
+The **etc** directory contains multiple scripts related to analysis, such as somatic enrichments, differential analyses, and UMAPs.
