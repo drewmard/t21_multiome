@@ -1,6 +1,6 @@
 # 10X Multiome Scripts
 
-Scripts for the 10X multiome analysis (RNA + ATAC) in trisomy and disomy foetal liver samples, as related to the following manuscript:
+Scripts for the 10X multiome analysis (RNA + ATAC) in trisomy 21 and disomy foetal liver samples, as related to the following manuscript:
 
 **Marderstein, A.R. et al. (2024). Single-cell multi-omics map of human foetal blood in Down's Syndrome. _Nature_.**
 
